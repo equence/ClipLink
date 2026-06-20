@@ -20,7 +20,11 @@ target_link_libraries(cliplink_core PUBLIC Qt6::Core)
 
 add_library(cliplink_client_lib
     src/client/clipboard_watcher.cpp
+    src/client/clipboard_watcher.h
+    src/client/main_window.cpp
+    src/client/main_window.h
     src/client/network_client.cpp
+    src/client/network_client.h
 )
 target_include_directories(cliplink_client_lib PUBLIC src)
 target_link_libraries(cliplink_client_lib PUBLIC cliplink_core Qt6::Network Qt6::Widgets)
@@ -65,3 +69,14 @@ add_executable(cliplink_network_client_tests
 )
 target_link_libraries(cliplink_network_client_tests PRIVATE cliplink_client_lib cliplink_server_lib Qt6::Test)
 add_test(NAME cliplink_network_client_tests COMMAND cliplink_network_client_tests)
+
+add_executable(cliplink_main_window_tests
+    tests/test_main_window.cpp
+)
+target_link_libraries(cliplink_main_window_tests PRIVATE cliplink_client_lib Qt6::Test)
+add_test(NAME cliplink_main_window_tests COMMAND cliplink_main_window_tests)
+
+add_executable(cliplink_client
+    src/client/main.cpp
+)
+target_link_libraries(cliplink_client PRIVATE cliplink_client_lib)
