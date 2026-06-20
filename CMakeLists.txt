@@ -18,6 +18,17 @@ add_library(cliplink_core
 target_include_directories(cliplink_core PUBLIC src)
 target_link_libraries(cliplink_core PUBLIC Qt6::Core)
 
+add_library(cliplink_server_lib
+    src/server/relay_server.cpp
+)
+target_include_directories(cliplink_server_lib PUBLIC src)
+target_link_libraries(cliplink_server_lib PUBLIC cliplink_core Qt6::Network)
+
+add_executable(cliplink_server
+    src/server/main.cpp
+)
+target_link_libraries(cliplink_server PRIVATE cliplink_server_lib Qt6::Core)
+
 add_executable(cliplink_tests
     tests/test_protocol.cpp
 )
@@ -29,3 +40,9 @@ add_executable(cliplink_recent_ids_tests
 )
 target_link_libraries(cliplink_recent_ids_tests PRIVATE cliplink_core Qt6::Test)
 add_test(NAME cliplink_recent_ids_tests COMMAND cliplink_recent_ids_tests)
+
+add_executable(cliplink_relay_server_tests
+    tests/test_relay_server.cpp
+)
+target_link_libraries(cliplink_relay_server_tests PRIVATE cliplink_server_lib Qt6::Test)
+add_test(NAME cliplink_relay_server_tests COMMAND cliplink_relay_server_tests)
