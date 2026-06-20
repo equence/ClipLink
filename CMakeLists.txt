@@ -13,6 +13,7 @@ enable_testing()
 
 add_library(cliplink_core
     src/core/protocol.cpp
+    src/core/recent_ids.cpp
 )
 target_include_directories(cliplink_core PUBLIC src)
 target_link_libraries(cliplink_core PUBLIC Qt6::Core)
@@ -22,3 +23,9 @@ add_executable(cliplink_tests
 )
 target_link_libraries(cliplink_tests PRIVATE cliplink_core Qt6::Test)
 add_test(NAME cliplink_tests COMMAND cliplink_tests)
+
+add_executable(cliplink_recent_ids_tests
+    tests/test_recent_ids.cpp
+)
+target_link_libraries(cliplink_recent_ids_tests PRIVATE cliplink_core Qt6::Test)
+add_test(NAME cliplink_recent_ids_tests COMMAND cliplink_recent_ids_tests)
