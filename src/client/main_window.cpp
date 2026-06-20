@@ -21,9 +21,12 @@ MainWindow::MainWindow(QString deviceName, QWidget *parent)
 {
     setWindowTitle("ClipLink");
     resize(900, 600);
-    setStyleSheet("QMainWindow{background:#F8FAFC;} QFrame#card{background:white;border:1px solid #E2E8F0;border-radius:12px;} "
-                  "QPushButton{background:#312E81;color:white;border:0;border-radius:7px;padding:8px 14px;font-weight:600;} "
-                  "QPlainTextEdit,QListWidget{border:1px solid #E2E8F0;border-radius:8px;background:#FFF;} QListWidget::item{padding:10px;border-bottom:1px solid #F1F5F9;}");
+    setStyleSheet("QMainWindow{background:#F8FAFC;color:#0F172A;} QFrame#card{background:#FFF;border:1px solid #E2E8F0;border-radius:12px;} "
+                  "QPushButton{background:#312E81;color:#FFF;border:0;border-radius:7px;padding:8px 14px;font-weight:600;} "
+                  "QToolButton{color:#312E81;font-weight:600;padding:6px;} "
+                  "QPlainTextEdit,QListWidget{color:#0F172A;border:1px solid #E2E8F0;border-radius:8px;background:#FFF;} "
+                  "QListWidget::item{color:#0F172A;padding:10px;border-bottom:1px solid #F1F5F9;} "
+                  "QListWidget::item:selected{color:#0F172A;background:#EDE9FE;}");
     auto *central = new QWidget(this); auto *outer = new QVBoxLayout(central); outer->setContentsMargins(28,24,28,24); outer->setSpacing(16);
     auto *header = new QHBoxLayout; auto *title = new QLabel("ClipLink"); title->setStyleSheet("font-size:26px;font-weight:700;color:#312E81;");
     m_statusLabel = new QLabel("● 未连接"); m_statusLabel->setStyleSheet("color:#F59E0B;font-weight:600;");
