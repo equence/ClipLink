@@ -69,7 +69,7 @@ ctest --test-dir build --output-on-failure
 
 ## GitHub Actions
 
-每次推送到 `main` 或创建 Pull Request 时，GitHub Actions 会在 Windows 上安装 Qt 6、编译 Release 版本、运行测试，并上传 `cliplink-windows` 产物。下载后包含：
+每次推送到 `main` 或创建 Pull Request 时，GitHub Actions 会在 Windows、macOS、Linux 上安装 Qt 6、编译 Release 版本、运行测试，并分别上传 `cliplink-windows`、`cliplink-macos`、`cliplink-linux` 产物。产物包含：
 
 - `cliplink_server.exe`
 - `cliplink_client.exe`

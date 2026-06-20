@@ -1,4 +1,4 @@
-name: Build Windows release
+name: Build releases
 
 on:
   push:
@@ -9,7 +9,21 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    name: ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows
+            os: windows-latest
+            arch: win64_msvc2022_64
+          - platform: macos
+            os: macos-13
+            arch: clang_64
+          - platform: linux
+            os: ubuntu-latest
+            arch: linux_gcc_64
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -18,8 +32,7 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: '6.8.3'
-          arch: win64_msvc2022_64
-          modules: qtbase
+          arch: ${{ matrix.arch }}
 
       - name: Configure
         run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
@@ -30,11 +43,11 @@ jobs:
       - name: Test
         run: ctest --test-dir build --output-on-failure
 
-      - name: Upload Windows executables
+      - name: Upload binaries
         uses: actions/upload-artifact@v4
         with:
-          name: cliplink-windows
+          name: cliplink-${{ matrix.platform }}
           path: |
-            build/cliplink_server.exe
-            build/cliplink_client.exe
+            build/cliplink_server*
+            build/cliplink_client*
           if-no-files-found: error
