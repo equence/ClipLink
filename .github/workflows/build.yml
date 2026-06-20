@@ -116,7 +116,9 @@ jobs:
           for platform in windows macos linux; do
             tar -czf "release/ClipLink-${platform}.tar.gz" -C "dist/cliplink-${platform}" .
           done
-          cp dist/cliplink-macos/ClipLink-macos-arm64.dmg release/
+          dmg="$(find dist -type f -name 'ClipLink-macos-arm64.dmg' -print -quit)"
+          test -n "$dmg"
+          cp "$dmg" release/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
