@@ -16,7 +16,7 @@ ClipLink 是一个跨平台局域网剪贴板同步工具。它由一个 TCP 转
 
 ## 下载
 
-从 [Releases](https://github.com/equence/ClipLink/releases) 下载与你的平台对应的压缩包并解压。每个压缩包包含：
+从 [Releases](https://github.com/equence/ClipLink/releases) 下载与你的平台对应的压缩包并解压。macOS Apple Silicon 用户可直接下载并挂载 `ClipLink-macos-arm64.dmg`。每个压缩包包含：
 
 - `cliplink_server`：局域网转发服务。
 - `cliplink_client`：图形客户端。
