@@ -10,12 +10,16 @@ ClipboardWatcher::ClipboardWatcher(QString deviceId, QObject *parent)
     , m_deviceId(std::move(deviceId))
 {
     connect(QGuiApplication::clipboard(), &QClipboard::dataChanged, this, &ClipboardWatcher::clipboardChanged);
+    m_pollTimer.setInterval(500);
+    connect(&m_pollTimer, &QTimer::timeout, this, &ClipboardWatcher::observeClipboard);
+    m_pollTimer.start();
 }
 
 void ClipboardWatcher::applyRemoteText(const QString &messageId, const QString &text)
 {
     m_appliedIds.containsOrInsert(messageId);
     m_lastRemoteText = text;
+    m_lastObservedText = text;
     QGuiApplication::clipboard()->setText(text);
 }
 
@@ -32,8 +36,19 @@ bool ClipboardWatcher::shouldSendCurrentClipboard() const
 
 void ClipboardWatcher::clipboardChanged()
 {
+    observeClipboard();
+}
+
+void ClipboardWatcher::observeClipboard()
+{
+    const QString text = QGuiApplication::clipboard()->text();
+    if (text == m_lastObservedText) {
+        return;
+    }
+
+    m_lastObservedText = text;
     if (shouldSendCurrentClipboard()) {
-        emit localTextCopied(QGuiApplication::clipboard()->text());
+        emit localTextCopied(text);
     }
 }
 

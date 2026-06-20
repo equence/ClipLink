@@ -4,6 +4,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QTimer>
 
 namespace cliplink {
 
@@ -22,10 +23,13 @@ signals:
 
 private:
     void clipboardChanged();
+    void observeClipboard();
 
     QString m_deviceId;
     QString m_lastRemoteText;
+    QString m_lastObservedText;
     RecentIds m_appliedIds{20};
+    QTimer m_pollTimer;
 };
 
 } // namespace cliplink
