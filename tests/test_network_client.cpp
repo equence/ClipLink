@@ -8,6 +8,7 @@ class NetworkClientTest final : public QObject {
 private slots:
     void connectsToRelayServer();
     void relaysTextBetweenClients();
+    void refusesToSendBeforeConnection();
 };
 
 void NetworkClientTest::connectsToRelayServer()
@@ -18,6 +19,12 @@ void NetworkClientTest::connectsToRelayServer()
     QSignalSpy connected(&client, &cliplink::NetworkClient::connected);
     client.connectToServer("127.0.0.1", server.port());
     QTRY_VERIFY_WITH_TIMEOUT(connected.count() == 1, 1'000);
+}
+
+void NetworkClientTest::refusesToSendBeforeConnection()
+{
+    cliplink::NetworkClient client;
+    QVERIFY(!client.sendText("not connected", "device-a", "Desktop"));
 }
 
 void NetworkClientTest::relaysTextBetweenClients()

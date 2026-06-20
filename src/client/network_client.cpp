@@ -36,9 +36,14 @@ void NetworkClient::connectToServer(const QString &host, quint16 port)
     m_socket.abort(); m_socket.connectToHost(m_host, m_port);
 }
 
-void NetworkClient::sendText(const QString &text, const QString &deviceId, const QString &deviceName)
+bool NetworkClient::sendText(const QString &text, const QString &deviceId, const QString &deviceName)
 {
+    if (m_socket.state() != QAbstractSocket::ConnectedState) {
+        return false;
+    }
+
     m_socket.write(encodeFrame({"clipboard", QUuid::createUuid().toString(QUuid::WithoutBraces), deviceId, deviceName, text}));
+    return true;
 }
 
 } // namespace cliplink

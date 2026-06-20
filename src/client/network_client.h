@@ -11,7 +11,7 @@ class NetworkClient final : public QObject {
 public:
     explicit NetworkClient(QObject *parent = nullptr);
     void connectToServer(const QString &host, quint16 port);
-    void sendText(const QString &text, const QString &deviceId, const QString &deviceName);
+    bool sendText(const QString &text, const QString &deviceId, const QString &deviceName);
 signals:
     void connected();
     void disconnected();
