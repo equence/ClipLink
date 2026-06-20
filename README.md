@@ -2,6 +2,18 @@
 
 ClipLink 是一个跨平台局域网剪贴板同步工具。它由一个 TCP 转发服务端和 Qt 6 桌面客户端组成，只同步纯文本。
 
+![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-312E81)
+![Language](https://img.shields.io/badge/C%2B%2B-17-14B8A6)
+
+## 功能
+
+- 局域网 TCP 转发：一个服务端可连接多个桌面客户端。
+- 纯文本剪贴板同步：本地复制后自动同步，并显示最近历史。
+- 防回环：接收远端内容后不会无限重复发送。
+- 图形界面：连接状态、同步历史、详情查看与手动发送。
+- 连接恢复：断线后最多自动尝试重新连接 3 次。
+- 跨平台构建：基于 CMake 和 Qt 6。
+
 ## 目标
 
 - `cliplink_core`：协议与去重逻辑。
@@ -52,6 +64,15 @@ ctest --test-dir build --output-on-failure
 ```
 
 在客户端点击“连接服务器”，输入服务端局域网地址。连接成功后，在任意一端复制纯文本，其他已连接客户端会收到同步内容；也可以在底部输入框手动发送文本。
+
+单客户端也会显示本地复制的历史记录。要验证设备间同步，请同时运行两个客户端（或在另一台局域网设备运行客户端）。
+
+## GitHub Actions
+
+每次推送到 `main` 或创建 Pull Request 时，GitHub Actions 会在 Windows 上安装 Qt 6、编译 Release 版本、运行测试，并上传 `cliplink-windows` 产物。下载后包含：
+
+- `cliplink_server.exe`
+- `cliplink_client.exe`
 
 ## 验收步骤
 
