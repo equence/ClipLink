@@ -3,6 +3,7 @@
 #include <QDateTime>
 #include <QFormLayout>
 #include <QFrame>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QInputDialog>
 #include <QLabel>
@@ -11,24 +12,45 @@
 #include <QPlainTextEdit>
 #include <QPushButton>
 #include <QSplitter>
+#include <QStyleHints>
 #include <QToolButton>
 #include <QVBoxLayout>
 
 namespace cliplink {
+
+namespace {
+
+QString themeStyle(Qt::ColorScheme scheme)
+{
+    if (scheme == Qt::ColorScheme::Dark) {
+        return "QMainWindow{background:#111827;color:#E5E7EB;} QLabel#title{font-size:26px;font-weight:700;color:#A5B4FC;} QFrame#card{background:#1F2937;border:1px solid #374151;border-radius:12px;} "
+               "QPushButton{background:#6366F1;color:#FFF;border:0;border-radius:7px;padding:8px 14px;font-weight:600;} "
+               "QToolButton{color:#C7D2FE;font-weight:600;padding:6px;} "
+               "QPlainTextEdit,QListWidget{color:#E5E7EB;border:1px solid #374151;border-radius:8px;background:#111827;} "
+               "QListWidget::item{color:#E5E7EB;padding:10px;border-bottom:1px solid #374151;} "
+               "QListWidget::item:selected{color:#FFF;background:#3730A3;}";
+    }
+
+    return "QMainWindow{background:#F8FAFC;color:#0F172A;} QLabel#title{font-size:26px;font-weight:700;color:#312E81;} QFrame#card{background:#FFF;border:1px solid #E2E8F0;border-radius:12px;} "
+           "QPushButton{background:#312E81;color:#FFF;border:0;border-radius:7px;padding:8px 14px;font-weight:600;} "
+           "QToolButton{color:#312E81;font-weight:600;padding:6px;} "
+           "QPlainTextEdit,QListWidget{color:#0F172A;border:1px solid #E2E8F0;border-radius:8px;background:#FFF;} "
+           "QListWidget::item{color:#0F172A;padding:10px;border-bottom:1px solid #F1F5F9;} "
+           "QListWidget::item:selected{color:#0F172A;background:#EDE9FE;}";
+}
+
+} // namespace
 
 MainWindow::MainWindow(QString deviceName, QWidget *parent)
     : QMainWindow(parent), m_deviceName(std::move(deviceName))
 {
     setWindowTitle("ClipLink");
     resize(900, 600);
-    setStyleSheet("QMainWindow{background:#F8FAFC;color:#0F172A;} QFrame#card{background:#FFF;border:1px solid #E2E8F0;border-radius:12px;} "
-                  "QPushButton{background:#312E81;color:#FFF;border:0;border-radius:7px;padding:8px 14px;font-weight:600;} "
-                  "QToolButton{color:#312E81;font-weight:600;padding:6px;} "
-                  "QPlainTextEdit,QListWidget{color:#0F172A;border:1px solid #E2E8F0;border-radius:8px;background:#FFF;} "
-                  "QListWidget::item{color:#0F172A;padding:10px;border-bottom:1px solid #F1F5F9;} "
-                  "QListWidget::item:selected{color:#0F172A;background:#EDE9FE;}");
+    const auto applyTheme = [this] { setStyleSheet(themeStyle(QGuiApplication::styleHints()->colorScheme())); };
+    applyTheme();
+    connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this, [applyTheme](Qt::ColorScheme) { applyTheme(); });
     auto *central = new QWidget(this); auto *outer = new QVBoxLayout(central); outer->setContentsMargins(28,24,28,24); outer->setSpacing(16);
-    auto *header = new QHBoxLayout; auto *title = new QLabel("ClipLink"); title->setStyleSheet("font-size:26px;font-weight:700;color:#312E81;");
+    auto *header = new QHBoxLayout; auto *title = new QLabel("ClipLink"); title->setObjectName("title");
     m_statusLabel = new QLabel("● 未连接"); m_statusLabel->setStyleSheet("color:#F59E0B;font-weight:600;");
     auto *connectButton = new QPushButton("连接服务器"); auto *settingsButton = new QToolButton; settingsButton->setText("设置"); header->addWidget(title); header->addStretch(); header->addWidget(m_statusLabel); header->addWidget(settingsButton); header->addWidget(connectButton); outer->addLayout(header);
     auto *card = new QFrame; card->setObjectName("card"); auto *layout = new QVBoxLayout(card); layout->setContentsMargins(16,16,16,16);
