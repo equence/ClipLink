@@ -8,9 +8,21 @@ class ClipboardWatcherTest final : public QObject {
     Q_OBJECT
 
 private slots:
+    void ignoresClipboardTextPresentAtStartup();
     void remoteMessageDoesNotCreateOutboundLoop();
     void emitsNewLocalClipboardText();
 };
+
+void ClipboardWatcherTest::ignoresClipboardTextPresentAtStartup()
+{
+    QGuiApplication::clipboard()->setText("clipboard text from before startup");
+
+    cliplink::ClipboardWatcher watcher("device-a");
+    QSignalSpy copied(&watcher, &cliplink::ClipboardWatcher::localTextCopied);
+
+    QTest::qWait(700);
+    QCOMPARE(copied.count(), 0);
+}
 
 void ClipboardWatcherTest::remoteMessageDoesNotCreateOutboundLoop()
 {

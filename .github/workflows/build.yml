@@ -69,6 +69,21 @@ jobs:
         if: matrix.platform != 'linux'
         run: ctest --test-dir build --output-on-failure
 
+      - name: Package Windows runtime
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist/windows | Out-Null
+          Copy-Item build/cliplink_client.exe dist/windows/
+          Copy-Item build/cliplink_server.exe dist/windows/
+          windeployqt --release --compiler-runtime --dir dist/windows build/cliplink_client.exe
+
+      - name: Package Linux runtime
+        if: matrix.platform == 'linux'
+        run: |
+          mkdir -p dist/linux
+          cp build/cliplink_client build/cliplink_server dist/linux/
+
       - name: Package Apple Silicon DMG
         if: matrix.platform == 'macos'
         run: |
@@ -88,13 +103,13 @@ jobs:
           "$(brew --prefix qtbase)/bin/macdeployqt" dist/ClipLink.app
           hdiutil create -volname ClipLink -srcfolder dist/ClipLink.app -ov -format UDZO dist/ClipLink-macos-arm64.dmg
 
-      - name: Upload binaries
+      - name: Upload runtime packages
         uses: actions/upload-artifact@v4
         with:
           name: cliplink-${{ matrix.platform }}
           path: |
-            build/cliplink_server*
-            build/cliplink_client*
+            dist/windows/**
+            dist/linux/**
             dist/ClipLink-macos-arm64.dmg
           if-no-files-found: error
 

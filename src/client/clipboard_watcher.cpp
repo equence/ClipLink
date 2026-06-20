@@ -9,6 +9,7 @@ ClipboardWatcher::ClipboardWatcher(QString deviceId, QObject *parent)
     : QObject(parent)
     , m_deviceId(std::move(deviceId))
 {
+    m_lastObservedText = QGuiApplication::clipboard()->text();
     connect(QGuiApplication::clipboard(), &QClipboard::dataChanged, this, &ClipboardWatcher::clipboardChanged);
     m_pollTimer.setInterval(500);
     connect(&m_pollTimer, &QTimer::timeout, this, &ClipboardWatcher::observeClipboard);
