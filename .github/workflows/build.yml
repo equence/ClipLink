@@ -34,13 +34,29 @@ jobs:
           version: '6.8.3'
           arch: ${{ matrix.arch }}
 
-      - name: Configure
+      - name: Set up MSVC
+        if: matrix.platform == 'windows'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Configure Windows
+        if: matrix.platform == 'windows'
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=cl
+
+      - name: Configure macOS and Linux
+        if: matrix.platform != 'windows'
         run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 
       - name: Build
         run: cmake --build build --config Release
 
-      - name: Test
+      - name: Test Linux headlessly
+        if: matrix.platform == 'linux'
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Test Windows and macOS
+        if: matrix.platform != 'linux'
         run: ctest --test-dir build --output-on-failure
 
       - name: Upload binaries
