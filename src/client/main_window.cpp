@@ -6,6 +6,7 @@
 #include <QHBoxLayout>
 #include <QInputDialog>
 #include <QLabel>
+#include <QLineEdit>
 #include <QListWidget>
 #include <QPlainTextEdit>
 #include <QPushButton>
@@ -32,7 +33,7 @@ MainWindow::MainWindow(QString deviceName, QWidget *parent)
     m_composer = new QPlainTextEdit; m_composer->setPlaceholderText("输入文本并发送到已连接设备…"); m_composer->setFixedHeight(82); auto *send = new QPushButton("发送"); auto *bottom = new QHBoxLayout; bottom->addWidget(m_composer,1); bottom->addWidget(send); layout->addLayout(bottom); outer->addWidget(card,1); setCentralWidget(central);
     connect(m_history, &QListWidget::currentRowChanged, this, [this](int row){ if (auto *item=m_history->item(row)) m_detail->setPlainText(item->data(Qt::UserRole).toString()); });
     connect(send, &QPushButton::clicked, this, [this]{ const QString text=m_composer->toPlainText().trimmed(); if(!text.isEmpty()){ emit sendRequested(text); m_composer->clear(); }});
-    connect(connectButton, &QPushButton::clicked, this, [this]{ bool ok=false; const QString host=QInputDialog::getText(this,"连接 ClipLink","服务器地址",QLineEdit::Normal,"127.0.0.1",&ok); if(ok) emit connectRequested(host,45454); });
+    connect(connectButton, &QPushButton::clicked, this, [this]{ bool ok=false; const QString host=QInputDialog::getText(this,"连接 ClipLink","服务器地址",QLineEdit::Normal,"127.0.0.1",&ok); if(!ok) return; const int port=QInputDialog::getInt(this,"连接 ClipLink","端口",45454,1,65535,1,&ok); if(ok) emit connectRequested(host,static_cast<quint16>(port)); });
 }
 
 void MainWindow::appendHistory(const QString &source, const QString &text)

@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QTimer>
 
 namespace cliplink {
 
@@ -14,10 +15,15 @@ public:
 signals:
     void connected();
     void disconnected();
+    void errorOccurred(const QString &message);
     void clipboardReceived(const QString &id, const QString &text);
 private:
     QTcpSocket m_socket;
     QByteArray m_buffer;
+    QTimer m_reconnectTimer;
+    QString m_host;
+    quint16 m_port{};
+    int m_reconnectAttempts{};
 };
 
 } // namespace cliplink

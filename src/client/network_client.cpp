@@ -9,8 +9,14 @@ namespace cliplink {
 NetworkClient::NetworkClient(QObject *parent)
     : QObject(parent)
 {
-    connect(&m_socket, &QTcpSocket::connected, this, &NetworkClient::connected);
-    connect(&m_socket, &QTcpSocket::disconnected, this, &NetworkClient::disconnected);
+    m_reconnectTimer.setSingleShot(true);
+    connect(&m_reconnectTimer, &QTimer::timeout, this, [this] { m_socket.connectToHost(m_host, m_port); });
+    connect(&m_socket, &QTcpSocket::connected, this, [this] { m_reconnectAttempts = 0; emit connected(); });
+    connect(&m_socket, &QTcpSocket::disconnected, this, [this] {
+        emit disconnected();
+        if (m_reconnectAttempts++ < 3) m_reconnectTimer.start(1'000);
+    });
+    connect(&m_socket, &QTcpSocket::errorOccurred, this, [this](QAbstractSocket::SocketError) { emit errorOccurred(m_socket.errorString()); });
     connect(&m_socket, &QTcpSocket::readyRead, this, [this] {
         m_buffer += m_socket.readAll();
         while (m_buffer.size() >= 4) {
@@ -24,7 +30,11 @@ NetworkClient::NetworkClient(QObject *parent)
     });
 }
 
-void NetworkClient::connectToServer(const QString &host, quint16 port) { m_socket.connectToHost(host, port); }
+void NetworkClient::connectToServer(const QString &host, quint16 port)
+{
+    m_host = host; m_port = port; m_reconnectAttempts = 0; m_reconnectTimer.stop();
+    m_socket.abort(); m_socket.connectToHost(m_host, m_port);
+}
 
 void NetworkClient::sendText(const QString &text, const QString &deviceId, const QString &deviceName)
 {

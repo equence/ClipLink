@@ -4,6 +4,7 @@
 
 #include <QApplication>
 #include <QSettings>
+#include <QStatusBar>
 
 int main(int argc, char *argv[])
 {
@@ -16,5 +17,6 @@ int main(int argc, char *argv[])
     QObject::connect(&network,&cliplink::NetworkClient::clipboardReceived,&clipboard,&cliplink::ClipboardWatcher::applyRemoteText);
     QObject::connect(&network,&cliplink::NetworkClient::clipboardReceived,&window,[&](const QString &,const QString &text){ window.appendHistory("远端设备",text); });
     QObject::connect(&network,&cliplink::NetworkClient::connected,&window,[&]{window.setConnected(true);}); QObject::connect(&network,&cliplink::NetworkClient::disconnected,&window,[&]{window.setConnected(false);});
+    QObject::connect(&network,&cliplink::NetworkClient::errorOccurred,&window,[&](const QString &message){ window.statusBar()->showMessage(message, 4'000); });
     window.show(); return app.exec();
 }
