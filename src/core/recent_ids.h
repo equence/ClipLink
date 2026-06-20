@@ -10,6 +10,7 @@ class RecentIds {
 public:
     explicit RecentIds(int capacity);
 
+    bool contains(const QString &id) const;
     bool containsOrInsert(const QString &id);
 
 private:

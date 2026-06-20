@@ -7,6 +7,11 @@ RecentIds::RecentIds(int capacity)
 {
 }
 
+bool RecentIds::contains(const QString &id) const
+{
+    return m_ids.contains(id);
+}
+
 bool RecentIds::containsOrInsert(const QString &id)
 {
     if (m_ids.contains(id)) {
