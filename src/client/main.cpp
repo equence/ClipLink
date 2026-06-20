@@ -9,7 +9,7 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv); app.setApplicationName("ClipLink");
-    QSettings settings; const QString deviceName = settings.value("deviceName", QSysInfo::machineHostName()).toString();
+    QSettings settings; QString deviceName = settings.value("deviceName", QSysInfo::machineHostName()).toString();
     cliplink::MainWindow window(deviceName); cliplink::NetworkClient network; cliplink::ClipboardWatcher clipboard(deviceName);
     QObject::connect(&window,&cliplink::MainWindow::connectRequested,&network,&cliplink::NetworkClient::connectToServer);
     QObject::connect(&window,&cliplink::MainWindow::sendRequested,&network,[&](const QString &text){ network.sendText(text,deviceName,deviceName); window.appendHistory(deviceName,text); });
@@ -18,5 +18,6 @@ int main(int argc, char *argv[])
     QObject::connect(&network,&cliplink::NetworkClient::clipboardReceived,&window,[&](const QString &,const QString &text){ window.appendHistory("远端设备",text); });
     QObject::connect(&network,&cliplink::NetworkClient::connected,&window,[&]{window.setConnected(true);}); QObject::connect(&network,&cliplink::NetworkClient::disconnected,&window,[&]{window.setConnected(false);});
     QObject::connect(&network,&cliplink::NetworkClient::errorOccurred,&window,[&](const QString &message){ window.statusBar()->showMessage(message, 4'000); });
+    QObject::connect(&window,&cliplink::MainWindow::settingsChanged,&window,[&](const QString &name,const QString &host,quint16 port){ deviceName=name; settings.setValue("deviceName",name); settings.setValue("serverHost",host); settings.setValue("serverPort",port); });
     window.show(); return app.exec();
 }

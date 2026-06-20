@@ -19,6 +19,7 @@ public:
 signals:
     void sendRequested(const QString &text);
     void connectRequested(const QString &host, quint16 port);
+    void settingsChanged(const QString &deviceName, const QString &host, quint16 port);
 
 private:
     QString m_deviceName;
